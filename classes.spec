@@ -1,44 +1,33 @@
-# -*- mode: python ; coding: utf-8 -*-
+import smtplib
+from email.message import EmailMessage
 
 
-block_cipher = None
 
+# we asked the user to input his email
+sender = input("Enter the email of the sender: ")
 
-a = Analysis(
-    ['classes.py'],
-    pathex=[],
-    binaries=[],
-    datas=[],
-    hiddenimports=[],
-    hookspath=[],
-    hooksconfig={},
-    runtime_hooks=[],
-    excludes=[],
-    win_no_prefer_redirects=False,
-    win_private_assemblies=False,
-    cipher=block_cipher,
-    noarchive=False,
-)
-pyz = PYZ(a.pure, a.zipped_data, cipher=block_cipher)
+# we made the recipient a loop that will continue to run until the user types "done"
+recipient_list = []
+while True:
+    recipient = input("Enter the email address of recipient (type 'done' to finish): ")
+    if recipient.lower() == 'done':
+        break
+    recipient_list.append(recipient)
 
-exe = EXE(
-    pyz,
-    a.scripts,
-    a.binaries,
-    a.zipfiles,
-    a.datas,
-    [],
-    name='classes',
-    debug=False,
-    bootloader_ignore_signals=False,
-    strip=False,
-    upx=True,
-    upx_exclude=[],
-    runtime_tmpdir=None,
-    console=True,
-    disable_windowed_traceback=False,
-    argv_emulation=False,
-    target_arch=None,
-    codesign_identity=None,
-    entitlements_file=None,
-)
+# we asked the user to input password,subject and content
+mypassword = input("Enter your password: ")
+subject = input("Enter the subject of the mail: ")
+content = input("What is your content: ")
+
+# we called the objects of the class Emailmessage
+email_msg = EmailMessage()
+email_msg['Subject'] = subject
+email_msg['From'] = sender
+email_msg['To'] = ', '.join(recipient_list)
+email_msg.set_content(content)
+
+# we used smtp to send the message
+with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
+    smtp.login(sender,mypassword)
+    smtp.send_message(email_msg)
+    print('email sent')
